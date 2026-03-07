@@ -52,7 +52,7 @@ module user_project (
     output motor_adc_trigger
 );
 
-    localparam NUM_PERIPHERALS = 8;
+    localparam NUM_PERIPHERALS = 9;
 
     wire [NUM_PERIPHERALS*32-1:0] s_wb_dat_i;
     wire [NUM_PERIPHERALS-1:0]    s_wb_ack_i;
@@ -204,10 +204,10 @@ module user_project (
         .pwm_fault(1'b0)
     );
 
-    adc_wb_wrapper adc_inst (
+    CF_SRAM_1024x32_wb_wrapper #(.WIDTH(12)) sram_inst (
 `ifdef USE_POWER_PINS
-        .vccd1(vccd1),
-        .vssd1(vssd1),
+        .VPWR(vccd1),
+        .VGND(vssd1),
 `endif
         .wb_clk_i(wb_clk_i),
         .wb_rst_i(wb_rst_i),
@@ -218,15 +218,10 @@ module user_project (
         .wbs_dat_i(s_wb_dat_o[5*32 +: 32]),
         .wbs_adr_i(s_wb_adr_o[5*32 +: 32]),
         .wbs_ack_o(s_wb_ack_i[5]),
-        .wbs_dat_o(s_wb_dat_i[5*32 +: 32]),
-        .irq(peripheral_irqs[5]),
-        .adc_vin(adc_vin),
-        .adc_vrefh(adc_vrefh),
-        .adc_vrefl(adc_vrefl),
-        .adc_comp_out(adc_comp_out)
+        .wbs_dat_o(s_wb_dat_i[5*32 +: 32])
     );
 
-    motor_adc_3ch_wb motor_adc_inst (
+    adc_wb_wrapper adc_inst (
 `ifdef USE_POWER_PINS
         .vccd1(vccd1),
         .vssd1(vssd1),
@@ -242,6 +237,28 @@ module user_project (
         .wbs_ack_o(s_wb_ack_i[6]),
         .wbs_dat_o(s_wb_dat_i[6*32 +: 32]),
         .irq(peripheral_irqs[6]),
+        .adc_vin(adc_vin),
+        .adc_vrefh(adc_vrefh),
+        .adc_vrefl(adc_vrefl),
+        .adc_comp_out(adc_comp_out)
+    );
+
+    motor_adc_3ch_wb motor_adc_inst (
+`ifdef USE_POWER_PINS
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
+        .wb_clk_i(wb_clk_i),
+        .wb_rst_i(wb_rst_i),
+        .wbs_stb_i(s_wb_stb_o[7]),
+        .wbs_cyc_i(s_wb_cyc_o[7]),
+        .wbs_we_i(s_wb_we_o[7]),
+        .wbs_sel_i(s_wb_sel_o[7*4 +: 4]),
+        .wbs_dat_i(s_wb_dat_o[7*32 +: 32]),
+        .wbs_adr_i(s_wb_adr_o[7*32 +: 32]),
+        .wbs_ack_o(s_wb_ack_i[7]),
+        .wbs_dat_o(s_wb_dat_i[7*32 +: 32]),
+        .irq(peripheral_irqs[7]),
         .ext_trigger(motor_adc_trigger),
         .adc_vin_a(motor_adc_vin_a),
         .adc_vin_b(motor_adc_vin_b),
@@ -255,14 +272,14 @@ module user_project (
         .rst_n(~wb_rst_i),
         .irq_lines(peripheral_irqs),
         .irq_out(user_irq[0]),
-        .wb_adr_i(s_wb_adr_o[7*32 +: 32]),
-        .wb_dat_i(s_wb_dat_o[7*32 +: 32]),
-        .wb_dat_o(s_wb_dat_i[7*32 +: 32]),
-        .wb_sel_i(s_wb_sel_o[7*4 +: 4]),
-        .wb_cyc_i(s_wb_cyc_o[7]),
-        .wb_stb_i(s_wb_stb_o[7]),
-        .wb_we_i(s_wb_we_o[7]),
-        .wb_ack_o(s_wb_ack_i[7])
+        .wb_adr_i(s_wb_adr_o[8*32 +: 32]),
+        .wb_dat_i(s_wb_dat_o[8*32 +: 32]),
+        .wb_dat_o(s_wb_dat_i[8*32 +: 32]),
+        .wb_sel_i(s_wb_sel_o[8*4 +: 4]),
+        .wb_cyc_i(s_wb_cyc_o[8]),
+        .wb_stb_i(s_wb_stb_o[8]),
+        .wb_we_i(s_wb_we_o[8]),
+        .wb_ack_o(s_wb_ack_i[8])
     );
 
     assign s_wb_err_i = {NUM_PERIPHERALS{1'b0}};

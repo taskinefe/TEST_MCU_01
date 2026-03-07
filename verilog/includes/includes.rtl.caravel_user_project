@@ -37,6 +37,11 @@
 -v $(USER_PROJECT_VERILOG)/rtl/sky130_ef_ip__adc3v_12bit_fixed.v
 -v $(USER_PROJECT_VERILOG)/../ip/sky130_ef_ip__adc3v_12bit/verilog/sar_ctrl.v
 
+# SRAM IP
+-v $(USER_PROJECT_VERILOG)/../ip/CF_SRAM_1024x32/hdl/bus_wrapper/CF_SRAM_1024x32_wb_wrapper.v
+-v $(USER_PROJECT_VERILOG)/../ip/CF_SRAM_1024x32/hdl/controllers/ram_controller_wb.v
+-v $(USER_PROJECT_VERILOG)/../ip/CF_SRAM_1024x32/hdl/beh_models/CF_SRAM_1024x32.v
+
 # User Project
 -v $(USER_PROJECT_VERILOG)/rtl/adc_wb_wrapper.v
 -v $(USER_PROJECT_VERILOG)/rtl/motor_adc_3ch.v
