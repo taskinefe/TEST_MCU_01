@@ -33,6 +33,23 @@
 #define SAMPLE_FREQ         8000.0f // Same as PWM frequency
 
 #define USE_HARDWARE_FOC    1       // 1 = Hardware acceleration, 0 = Software only
+#define DEBUG_GPIO          1       // 1 = Enable GPIO debug signals, 0 = Disable
+
+//=============================================================================
+// GPIO Debug Pin Assignments
+//=============================================================================
+
+#define GPIO_ADC_DONE       29      // Toggle when ADC conversion complete
+#define GPIO_FOC_START      30      // Toggle at FOC loop start
+#define GPIO_FOC_DONE       31      // Toggle at FOC loop end
+#define GPIO_HEARTBEAT      33      // Slow heartbeat
+
+// GPIO toggle macro
+#if DEBUG_GPIO
+    #define DEBUG_TOGGLE(pin) do { reg_mprj_datal ^= (1 << (pin)); } while(0)
+#else
+    #define DEBUG_TOGGLE(pin) do {} while(0)
+#endif
 
 //=============================================================================
 // Global Variables
@@ -115,6 +132,28 @@ void init_foc_timer(void) {
 }
 
 //=============================================================================
+// GPIO Debug Initialization
+//=============================================================================
+
+void init_debug_gpio(void) {
+#if DEBUG_GPIO
+    // Configure debug GPIO pins as outputs
+    reg_mprj_io_29 = GPIO_MODE_MGMT_STD_OUTPUT;  // ADC_DONE
+    reg_mprj_io_30 = GPIO_MODE_MGMT_STD_OUTPUT;  // FOC_START
+    reg_mprj_io_31 = GPIO_MODE_MGMT_STD_OUTPUT;  // FOC_DONE
+    reg_mprj_io_33 = GPIO_MODE_MGMT_STD_OUTPUT;  // HEARTBEAT
+    
+    // Apply GPIO configuration
+    reg_mprj_xfer = 1;
+    while (reg_mprj_xfer == 1);
+    
+    // Initialize all low
+    reg_mprj_datal &= ~((1 << GPIO_ADC_DONE) | (1 << GPIO_FOC_START) | 
+                        (1 << GPIO_FOC_DONE) | (1 << GPIO_HEARTBEAT));
+#endif
+}
+
+//=============================================================================
 // Interrupt Handling
 //=============================================================================
 
@@ -134,8 +173,14 @@ void init_foc_timer(void) {
 void foc_process(void) {
     isr_count++;
     
+    // Mark FOC loop start
+    DEBUG_TOGGLE(GPIO_FOC_START);
+    
     // Wait for ADC conversion complete (triggered at PWM center)
     while (!(READ_REG(MOTOR_ADC_STATUS) & 0x01));
+    
+    // ADC conversion complete! Toggle debug GPIO
+    DEBUG_TOGGLE(GPIO_ADC_DONE);
     
 #if USE_HARDWARE_FOC
     // Hardware-accelerated FOC loop
@@ -147,6 +192,9 @@ void foc_process(void) {
                 &duty_a, &duty_b, &duty_c, PWM_PERIOD);
 #endif
     
+    // Mark FOC loop complete
+    DEBUG_TOGGLE(GPIO_FOC_DONE);
+    
     foc_ready = 1;
 }
 
@@ -155,17 +203,8 @@ void foc_process(void) {
 //=============================================================================
 
 void main(void) {
-    // Configure management SoC GPIO for debug
-    reg_mprj_io_31 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_30 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_29 = GPIO_MODE_MGMT_STD_OUTPUT;
-    
-    // Apply GPIO configuration
-    reg_mprj_xfer = 1;
-    while (reg_mprj_xfer == 1);
-    
-    // Signal firmware start
-    reg_mprj_datal = 0x00000001;  // LED on
+    // Initialize debug GPIO
+    init_debug_gpio();
     
     //=========================================================================
     // Initialize FOC
@@ -196,14 +235,12 @@ void main(void) {
     // Initialize FOC timer (8 kHz interrupt)
     init_foc_timer();
     
-    // Signal initialization complete
-    reg_mprj_datal = 0x00000003;  // Pattern change
-    
     //=========================================================================
     // Open-Loop FOC Control Loop
     //=========================================================================
     
     uint32_t ramp_counter = 0;
+    uint32_t heartbeat_counter = 0;
     const uint32_t RAMP_STEPS = 5000;  // Ramp up over 5000 samples (~625ms @ 8kHz)
     
     // In open-loop FOC, we set Vq directly instead of using PI controllers
@@ -240,10 +277,10 @@ void main(void) {
                 foc_state.vq = foc_params.vq;
             }
             
-            // Debug output every 1000 samples (125ms)
-            if ((isr_count % 1000) == 0) {
-                // Toggle GPIO for monitoring
-                reg_mprj_datal ^= 0x00000002;
+            // Heartbeat every 1000 samples (125ms @ 8kHz)
+            if (++heartbeat_counter >= 1000) {
+                DEBUG_TOGGLE(GPIO_HEARTBEAT);
+                heartbeat_counter = 0;
             }
             
             // Speed change example: ramp to higher speed after 2 seconds
