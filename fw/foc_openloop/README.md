@@ -245,6 +245,64 @@ void foc_svpwm_hw(foc_state_t *state, float vdc);  // Hardware
 
 ---
 
+## Interrupt Handling
+
+The firmware supports two modes:
+
+### Mode 1: Polled Timer (Default)
+
+**Simple, no interrupt setup required**
+
+```c
+#define USE_INTERRUPTS 0  // in isr.h
+
+while (1) {
+    if (READ_REG(TIMER_STATUS) & 0x01) {
+        WRITE_REG(TIMER_STATUS, 0x01);  // Clear flag
+        foc_process();  // Run FOC
+    }
+}
+```
+
+**Advantages:**
+- Simple implementation
+- No interrupt vector setup
+- Easy to debug
+- Sufficient for 8 kHz FOC
+
+**Disadvantages:**
+- CPU must poll timer
+- Slight jitter possible
+
+### Mode 2: True Interrupts
+
+**Hardware interrupt-driven (optional)**
+
+```c
+#define USE_INTERRUPTS 1  // in isr.h
+
+// Setup once
+setup_interrupts();
+
+// FOC runs automatically in timer_isr()
+while (1) {
+    // Do other tasks
+}
+```
+
+**Advantages:**
+- Precise timing
+- CPU free between FOC loops
+- Lower latency
+
+**Disadvantages:**
+- Requires interrupt vector setup
+- Depends on RISC-V core specifics
+
+**Default:** Polled mode (simpler, works everywhere)
+
+---
+
 ## Building
 
 ### Prerequisites
@@ -267,6 +325,21 @@ make
 main.hex    - Firmware hex file
 main.elf    - ELF executable
 main.bin    - Binary file
+```
+
+### Build Options
+
+**Enable interrupts:**
+
+Edit `isr.h`:
+```c
+#define USE_INTERRUPTS 1
+```
+
+Then rebuild:
+```bash
+make clean
+make
 ```
 
 ---

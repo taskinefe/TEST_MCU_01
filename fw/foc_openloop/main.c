@@ -115,10 +115,23 @@ void init_foc_timer(void) {
 }
 
 //=============================================================================
-// FOC Interrupt Service Routine
+// Interrupt Handling
 //=============================================================================
 
-void foc_isr(void) {
+// Note: In a polled implementation, we don't use actual interrupts
+// Instead, we check the timer flag in the main loop for simplicity
+// For true interrupt-driven operation, you would need:
+// 1. RISC-V interrupt vector table
+// 2. Trap handler setup
+// 3. Timer interrupt routing
+
+// For this demo, we use a polled approach which is simpler and sufficient
+
+//=============================================================================
+// FOC Processing Function (called every PWM period)
+//=============================================================================
+
+void foc_process(void) {
     isr_count++;
     
     // Wait for ADC conversion complete (triggered at PWM center)
@@ -198,7 +211,17 @@ void main(void) {
     foc_params.vd = 0.0f;  // No D-axis voltage
     
     while (1) {
-        // Wait for FOC interrupt to process
+        // Poll timer flag (8 kHz rate)
+        // In production, this could be interrupt-driven
+        if (READ_REG(TIMER_STATUS) & 0x01) {
+            // Clear timer flag
+            WRITE_REG(TIMER_STATUS, 0x01);
+            
+            // Process FOC
+            foc_process();
+        }
+        
+        // Process FOC results when ready
         if (foc_ready) {
             foc_ready = 0;
             
