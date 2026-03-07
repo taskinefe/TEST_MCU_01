@@ -56,6 +56,8 @@
 -v $(USER_PROJECT_VERILOG)/rtl/cordic_wb.v
 -v $(USER_PROJECT_VERILOG)/rtl/foc_transforms.v
 -v $(USER_PROJECT_VERILOG)/rtl/foc_transforms_wb.v
+-v $(USER_PROJECT_VERILOG)/rtl/overcurrent_protection.v
+-v $(USER_PROJECT_VERILOG)/rtl/overcurrent_protection_wb.v
 -v $(USER_PROJECT_VERILOG)/rtl/wishbone_bus_splitter.v
 -v $(USER_PROJECT_VERILOG)/rtl/WB_PIC.v
 -v $(USER_PROJECT_VERILOG)/rtl/user_project.v

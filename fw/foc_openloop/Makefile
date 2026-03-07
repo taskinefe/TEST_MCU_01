@@ -33,7 +33,7 @@ LDFLAGS = -T linker.ld -nostdlib
 LIBS = -lm
 
 # Source files
-SOURCES = main.c foc_lib.c isr.c
+SOURCES = main.c foc_lib.c isr.c overcurrent.c
 OBJECTS = $(SOURCES:.c=.o)
 
 # Target

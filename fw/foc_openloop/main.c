@@ -16,6 +16,7 @@
 
 #include "peripherals.h"
 #include "foc_lib.h"
+#include "overcurrent.h"
 #include <defs.h>
 #include <stub.h>
 
@@ -60,6 +61,11 @@ foc_params_t foc_params;
 
 volatile uint8_t foc_ready = 0;
 volatile uint32_t isr_count = 0;
+volatile uint8_t overcurrent_fault = 0;
+
+// Fault recovery
+#define FAULT_RECOVERY_DELAY 8000  // 1 second @ 8kHz
+uint32_t fault_recovery_counter = 0;
 
 //=============================================================================
 // PWM Initialization
@@ -173,6 +179,14 @@ void init_debug_gpio(void) {
 void foc_process(void) {
     isr_count++;
     
+    // Check for overcurrent fault
+    if (ocp_check_fault()) {
+        overcurrent_fault = 1;
+        // PWM already shutdown by hardware
+        // Just wait for recovery
+        return;
+    }
+    
     // Mark FOC loop start
     DEBUG_TOGGLE(GPIO_FOC_START);
     
@@ -235,6 +249,9 @@ void main(void) {
     // Initialize FOC timer (8 kHz interrupt)
     init_foc_timer();
     
+    // Initialize overcurrent protection (7A threshold)
+    ocp_init();
+    
     //=========================================================================
     // Open-Loop FOC Control Loop
     //=========================================================================
@@ -256,6 +273,33 @@ void main(void) {
             
             // Process FOC
             foc_process();
+        }
+        
+        // Handle overcurrent fault recovery
+        if (overcurrent_fault) {
+            // Wait for recovery delay
+            if (++fault_recovery_counter >= FAULT_RECOVERY_DELAY) {
+                // Get fault details
+                uint8_t fa, fb, fc;
+                ocp_get_phase_faults(&fa, &fb, &fc);
+                
+                // Clear fault
+                ocp_clear_fault();
+                overcurrent_fault = 0;
+                fault_recovery_counter = 0;
+                
+                // Reset FOC state
+                foc_state.vd = 0.0f;
+                foc_state.vq = 0.0f;
+                ramp_counter = 0;  // Restart ramp
+                
+                // Re-enable PWM (will start on next FOC cycle)
+                init_motor_pwm();
+                
+                // Indicate recovery
+                DEBUG_TOGGLE(GPIO_HEARTBEAT);
+            }
+            continue;  // Skip FOC until recovered
         }
         
         // Process FOC results when ready
