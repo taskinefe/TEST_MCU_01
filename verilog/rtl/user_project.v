@@ -49,10 +49,17 @@ module user_project (
     input  real motor_adc_vin_a,
     input  real motor_adc_vin_b,
     input  real motor_adc_vin_c,
-    output motor_adc_trigger
+    output motor_adc_trigger,
+    
+    // Overcurrent protection analog inputs
+    input  real ocp_phase_a_current,
+    input  real ocp_phase_b_current,
+    input  real ocp_phase_c_current,
+    output real ocp_dac_threshold,
+    output ocp_pwm_shutdown
 );
 
-    localparam NUM_PERIPHERALS = 9;
+    localparam NUM_PERIPHERALS = 10;
 
     wire [NUM_PERIPHERALS*32-1:0] s_wb_dat_i;
     wire [NUM_PERIPHERALS-1:0]    s_wb_ack_i;
@@ -265,6 +272,30 @@ module user_project (
         .adc_vin_c(motor_adc_vin_c),
         .adc_vrefh(3.3),
         .adc_vrefl(0.0)
+    );
+
+    // Overcurrent Protection (Peripheral #9)
+    overcurrent_protection_wb ocp_inst (
+`ifdef USE_POWER_PINS
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
+        .wb_clk_i(wb_clk_i),
+        .wb_rst_i(wb_rst_i),
+        .wbs_stb_i(s_wb_stb_o[9]),
+        .wbs_cyc_i(s_wb_cyc_o[9]),
+        .wbs_we_i(s_wb_we_o[9]),
+        .wbs_sel_i(s_wb_sel_o[9*4 +: 4]),
+        .wbs_dat_i(s_wb_dat_o[9*32 +: 32]),
+        .wbs_adr_i(s_wb_adr_o[9*32 +: 32]),
+        .wbs_ack_o(s_wb_ack_i[9]),
+        .wbs_dat_o(s_wb_dat_i[9*32 +: 32]),
+        .irq(peripheral_irqs[9]),
+        .phase_a_current(ocp_phase_a_current),
+        .phase_b_current(ocp_phase_b_current),
+        .phase_c_current(ocp_phase_c_current),
+        .dac_threshold(ocp_dac_threshold),
+        .pwm_shutdown(ocp_pwm_shutdown)
     );
 
     WB_PIC pic_inst (

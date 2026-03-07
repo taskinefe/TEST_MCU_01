@@ -107,6 +107,13 @@ module user_project_wrapper #(
     wire real motor_adc_vin_a;
     wire real motor_adc_vin_b;
     wire real motor_adc_vin_c;
+    
+    // Overcurrent protection signals
+    wire real ocp_phase_a_current;
+    wire real ocp_phase_b_current;
+    wire real ocp_phase_c_current;
+    wire real ocp_dac_threshold;
+    wire ocp_pwm_shutdown;
 
 user_project mprj (
 `ifdef USE_POWER_PINS
@@ -147,7 +154,12 @@ user_project mprj (
     .motor_adc_vin_a(motor_adc_vin_a),
     .motor_adc_vin_b(motor_adc_vin_b),
     .motor_adc_vin_c(motor_adc_vin_c),
-    .motor_adc_trigger(motor_adc_trigger)
+    .motor_adc_trigger(motor_adc_trigger),
+    .ocp_phase_a_current(ocp_phase_a_current),
+    .ocp_phase_b_current(ocp_phase_b_current),
+    .ocp_phase_c_current(ocp_phase_c_current),
+    .ocp_dac_threshold(ocp_dac_threshold),
+    .ocp_pwm_shutdown(ocp_pwm_shutdown)
 );
 
     assign io_out[5] = spi0_sclk;
@@ -205,6 +217,12 @@ user_project mprj (
     assign motor_adc_vin_a = analog_io[1];
     assign motor_adc_vin_b = analog_io[2];
     assign motor_adc_vin_c = analog_io[3];
+    
+    // Overcurrent protection analog connections
+    assign ocp_phase_a_current = analog_io[10];  // Phase A current sense
+    assign ocp_phase_b_current = analog_io[11];  // Phase B current sense
+    assign ocp_phase_c_current = analog_io[12];  // Phase C current sense
+    assign analog_io[13] = ocp_dac_threshold;    // DAC output (optional monitor)
 
 endmodule	// user_project_wrapper
 

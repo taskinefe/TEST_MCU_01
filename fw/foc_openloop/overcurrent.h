@@ -8,7 +8,7 @@
 // Overcurrent Protection Module
 //=============================================================================
 
-#define OCP_BASE          0x300D0000
+#define OCP_BASE          0x30090000  // Peripheral #9
 
 #define OCP_CTRL          (OCP_BASE + 0x00)
 #define OCP_DAC           (OCP_BASE + 0x04)
