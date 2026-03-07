@@ -1,0 +1,5 @@
+Test               status     start           end             duration      p/f      seed       
+RTL-basic_test     done       05:57:18(Sat)   05:57:26(Sat)   0:00:08.68    passed   1772891840
+
+
+Total: passed (1)   failed (0)   unknown (0)   elapsed time (0:00:08.72)

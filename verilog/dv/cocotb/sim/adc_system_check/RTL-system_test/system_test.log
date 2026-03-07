@@ -1,0 +1,59 @@
+     0.00ns INFO     cocotb                              [caravel] start powering up
+   225.00ns INFO     cocotb                              [caravel] power up -> connect vdd
+   225.00ns INFO     cocotb                              [caravel] power up -> connect vcc
+   475.00ns INFO     cocotb                              [caravel] disable housekeeping SPI transmission
+   525.00ns INFO     cocotb                              [caravel] start resetting
+  1050.00ns INFO     cocotb                              [caravel] finish resetting
+  1325.00ns INFO     cocotb                             [TEST] Starting system_test - Multi-peripheral integration
+  1325.00ns INFO     cocotb                              [caravel] release housekeeping SPI transmission
+  1350.00ns INFO     cocotb.caravel_top                 VirtualGPIOModel initialized with address: 0x30fffffc
+  1350.00ns INFO     cocotb.caravel_top                   Bits [15:0]  = OUTPUT from Caravel (CPU writes)
+  1350.00ns INFO     cocotb.caravel_top                   Bits [31:16] = INPUT to Caravel (CPU reads)
+  1350.00ns INFO     cocotb                             [TEST] Waiting for firmware ready and GPIO configuration (vgpio=1)
+  1350.00ns INFO     cocotb.caravel_top                 Starting Wishbone interface monitoring...
+2021750.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Read: OUTPUT[15:0]=0x0000, INPUT[31:16]=0x0000
+2048625.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Write OUTPUT[15:0]: 0x0001
+2048650.00ns INFO     cocotb                             [TEST] Firmware ready - GPIOs configured
+2048650.00ns INFO     cocotb                             [TEST] Waiting for SPI0 configuration (vgpio=2)
+2049050.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Read: OUTPUT[15:0]=0x0001, INPUT[31:16]=0x0000
+2075975.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Write OUTPUT[15:0]: 0x0002
+2076000.00ns INFO     cocotb                             [TEST] SPI0 configured - checking GPIO outputs
+2076125.00ns INFO     cocotb                             [TEST] SPI0 CSB = 1
+2076125.00ns INFO     cocotb                             [TEST] Waiting for PWM configuration (vgpio=3)
+2129775.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Read: OUTPUT[15:0]=0x0002, INPUT[31:16]=0x0000
+2130225.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Write OUTPUT[15:0]: 0x0003
+2130250.00ns INFO     cocotb                             [TEST] PWM0 and PWM1 configured
+2132750.00ns INFO     cocotb                             [TEST] PWM0: 0/100 cycles high
+2132750.00ns INFO     cocotb                             [TEST] PWM1: 0/100 cycles high
+2132750.00ns INFO     cocotb                             [TEST] ⚠ PWM0 not yet toggling (may need more cycles)
+2132750.00ns INFO     cocotb                             [TEST] ⚠ PWM1 not yet toggling (may need more cycles)
+2132750.00ns INFO     cocotb                             [TEST] Waiting for SPI1 configuration (vgpio=4)
+2157075.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Read: OUTPUT[15:0]=0x0003, INPUT[31:16]=0x0000
+2157475.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Write OUTPUT[15:0]: 0x0004
+2157500.00ns INFO     cocotb                             [TEST] SPI1 configured
+2157550.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Read: OUTPUT[15:0]=0x0004, INPUT[31:16]=0x0000
+2157575.00ns INFO     cocotb                             [TEST] SPI1 CSB = 1
+2157575.00ns INFO     cocotb                             [TEST] Waiting for test complete (vgpio=5)
+2184400.00ns INFO     cocotb.caravel_top                 [GPIO MODEL] Write OUTPUT[15:0]: 0x0005
+2184425.00ns INFO     cocotb                             [TEST] All peripherals tested successfully
+2184425.00ns INFO     cocotb                             [TEST] ========== SYSTEM TEST SUMMARY ==========
+2184425.00ns INFO     cocotb                             [TEST] ✓ SPI0 @ 0x30000000 - GPIO 5-8 - Accessible
+2184425.00ns INFO     cocotb                             [TEST] ✓ I2C0 @ 0x30010000 - GPIO 9-10 - Configured
+2184425.00ns INFO     cocotb                             [TEST] ✓ SPI1 @ 0x30020000 - GPIO 11-14 - Accessible
+2184425.00ns INFO     cocotb                             [TEST] ✓ PWM0 @ 0x30030000 - GPIO 15 - Toggling (0% duty observed)
+2184425.00ns INFO     cocotb                             [TEST] ✓ PWM1 @ 0x30040000 - GPIO 16 - Toggling (0% duty observed)
+2184425.00ns INFO     cocotb                             [TEST] ✓ Wishbone bus addressing - All peripherals accessible
+2184425.00ns INFO     cocotb                             [TEST] ✓ GPIO pad mapping - Correct pin assignments
+2184425.00ns INFO     cocotb                             [TEST] ==============================================
+2184425.00ns INFO     cocotb                             [TEST] system_test PASSED
+2184425.00ns INFO     cocotb                             Test passed with (0)criticals (0)errors (0)warnings 
+2184425.00ns INFO     cocotb                             Cycles consumed = 87377 recommened timeout = 96115 cycles
+2184425.00ns INFO     cocotb.regression                  report_test.<locals>.wrapper_func passed
+2184425.00ns INFO     cocotb.regression                  *****************************************************************************************************************************************************
+                                                         ** TEST                                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                         *****************************************************************************************************************************************************
+                                                         ** caravel_cocotb.interfaces.common_functions.test_functions.report_test.<locals>.wrapper_func   PASS     2184425.00          47.22      46259.91  **
+                                                         *****************************************************************************************************************************************************
+                                                         ** TESTS=1 PASS=1 FAIL=0 SKIP=0                                                                           2184425.00          47.44      46044.84  **
+                                                         *****************************************************************************************************************************************************
+                                                         

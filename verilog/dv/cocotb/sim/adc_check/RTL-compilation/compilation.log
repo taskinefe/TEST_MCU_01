@@ -1,0 +1,19 @@
+command:cd /workspace/caravel_multi_peripheral/verilog/dv/cocotb/sim/adc_check/RTL-compilation &&iverilog -g2012 -Ttyp  -DUSE_POWER_PINS -DUNIT_DELAY=#1 -DCOCOTB_SIM -DFUNCTIONAL -DWAVE_GEN -DIVERILOG -Dsky130 -DCPU_TYPE_VexRISC -DRUN_PATH=\"/workspace/caravel_multi_peripheral/verilog/dv/cocotb\" -DTAG=\"adc_check\" -DMCW_ROOT=\"/nc/templates/mgmt_core_wrapper\" -DUSER_PROJECT_ROOT=\"/workspace/caravel_multi_peripheral\" -DCARAVEL_ROOT=\"/nc/templates/caravel\" -DSIM_PATH=\"/workspace/caravel_multi_peripheral/verilog/dv/cocotb/sim/\" -DSIM=\"RTL\" -DTESTNAME=\"basic_test\" -DFTESTNAME=\"RTL-basic_test\" -DSIM_DIR=\"/workspace/caravel_multi_peripheral/verilog/dv/cocotb/sim/adc_check\" -DCORNER_nom  -I /workspace/caravel_multi_peripheral/verilog/rtl -o /workspace/caravel_multi_peripheral/verilog/dv/cocotb/sim/adc_check/RTL-compilation/sim.vvp -s caravel_top /nc/templates/caravel/verilog/rtl/toplevel_cocotb.v
+
+/nc/templates/caravel/verilog/rtl/caravel.v:236: warning: input port clock is coerced to inout.
+/workspace/caravel_multi_peripheral/verilog/../ip/sky130_ef_ip__adc3v_12bit/verilog/sky130_ef_ip__adc3v_12bit.v:52: error: Net out is not defined in this context.
+/workspace/caravel_multi_peripheral/verilog/../ip/sky130_ef_ip__adc3v_12bit/verilog/sky130_ef_ip__adc3v_12bit.v:72: error: Unable to bind wire/reg/memory `dac_out' in `caravel_top.uut.chip_core.mprj.mprj.adc_inst.adc_analog.genblk1'
+/workspace/caravel_multi_peripheral/verilog/../ip/sky130_ef_ip__adc3v_12bit/verilog/sky130_ef_ip__adc3v_12bit.v:72: error: Unable to elaborate r-value: ((held_value)>(dac_out))?(1'd1):(1'd0)
+/workspace/caravel_multi_peripheral/verilog/../ip/sky130_ef_ip__adc3v_12bit/verilog/sky130_ef_ip__adc3v_12bit.v:65: error: Unable to bind wire/reg/memory `ena' in `caravel_top.uut.chip_core.mprj.mprj.adc_inst.adc_analog.genblk1'
+/workspace/caravel_multi_peripheral/verilog/../ip/sky130_ef_ip__adc3v_12bit/verilog/sky130_ef_ip__adc3v_12bit.v:65: error: Unable to elaborate condition expression.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:206: error: Net vdda1 is not defined in this context.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:206: error: Inout port expression must support continuous assignment.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:206:      : Port 3 (vdda1) of adc_wb_wrapper is connected to vdda1
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:207: error: Net vssa1 is not defined in this context.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:207: error: Inout port expression must support continuous assignment.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:207:      : Port 4 (vssa1) of adc_wb_wrapper is connected to vssa1
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:223: warning: output port adc_comp_out is coerced to inout.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:226: warning: Port 3 (irq_lines) of WB_PIC expects 16 bits, got 7.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project.v:226:        : Padding 9 high bits of the port.
+/workspace/caravel_multi_peripheral/verilog/rtl/user_project_wrapper.v:141: warning: output port adc_comp_out is coerced to inout.
+9 error(s) during elaboration.

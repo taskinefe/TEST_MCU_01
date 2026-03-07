@@ -1,0 +1,2 @@
+command used to run this sim:
+% /usr/local/bin/caravel_cocotb -t system_test -tag system_run3
