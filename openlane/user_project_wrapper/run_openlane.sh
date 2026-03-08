@@ -93,10 +93,14 @@ else
     
     echo ""
     echo "Running OpenLane in Docker container..."
-    docker run --rm -it \
-      -v "$PROJECT_DIR":/workspace \
+    echo "Working directory: $PROJECT_DIR"
+    
+    # Run OpenLane directly (image has openlane as entrypoint)
+    docker run --rm \
+      -v "$PROJECT_DIR":/work \
+      -w /work \
       efabless/openlane:latest \
-      /bin/bash -c "cd /workspace && openlane openlane/user_project_wrapper/config.json --ef-save-views-to ."
+      openlane/user_project_wrapper/config.json --ef-save-views-to /work
 fi
 
 echo ""
