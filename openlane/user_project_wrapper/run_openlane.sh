@@ -3,20 +3,40 @@
 # OpenLane GDS Generation Script for Motor Control Project
 # This script automatically runs OpenLane to generate your GDS file
 
-set -e  # Exit on error
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-PROJECT_DIR="/workspace/caravel_multi_peripheral"
+# Determine project root (go up to find the directory with openlane/ folder)
+if [ -d "$SCRIPT_DIR/openlane/user_project_wrapper" ]; then
+    # Running from project root
+    PROJECT_DIR="$SCRIPT_DIR"
+elif [ -d "$SCRIPT_DIR/user_project_wrapper" ]; then
+    # Running from openlane/ directory
+    PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+elif [ -f "$SCRIPT_DIR/config.json" ]; then
+    # Running from openlane/user_project_wrapper/ directory
+    PROJECT_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+else
+    # Try current directory
+    PROJECT_DIR="$(pwd)"
+fi
+
 CONFIG_FILE="$PROJECT_DIR/openlane/user_project_wrapper/config.json"
 
 echo "=========================================="
 echo "OpenLane GDS Generation Script"
 echo "=========================================="
-echo "Project: $PROJECT_DIR"
-echo "Config:  $CONFIG_FILE"
+echo "Script location: $SCRIPT_DIR"
+echo "Project root:    $PROJECT_DIR"
+echo "Config file:     $CONFIG_FILE"
 echo ""
 
 # Navigate to project directory
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" || {
+    echo "ERROR: Cannot change to project directory: $PROJECT_DIR"
+    echo "Current directory: $(pwd)"
+    exit 1
+}
 
 # Check if config exists
 if [ ! -f "$CONFIG_FILE" ]; then
