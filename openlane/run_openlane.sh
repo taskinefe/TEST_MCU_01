@@ -47,12 +47,21 @@ fi
 echo "Checking OpenLane installation..."
 echo ""
 
-# Method 1: Try openlane command
+# Method 1: Try openlane command (check multiple locations)
+OPENLANE_CMD=""
 if command -v openlane &> /dev/null; then
-    echo "✅ Found 'openlane' command"
-    echo "Running: openlane $CONFIG_FILE --ef-save-views-to ."
+    OPENLANE_CMD="openlane"
+elif [ -x "$HOME/.nix-profile/bin/openlane" ]; then
+    OPENLANE_CMD="$HOME/.nix-profile/bin/openlane"
+elif [ -x "/usr/local/bin/openlane" ]; then
+    OPENLANE_CMD="/usr/local/bin/openlane"
+fi
+
+if [ -n "$OPENLANE_CMD" ]; then
+    echo "✅ Found openlane: $OPENLANE_CMD"
+    echo "Running: $OPENLANE_CMD $CONFIG_FILE --ef-save-views-to ."
     echo ""
-    openlane "$CONFIG_FILE" --ef-save-views-to .
+    "$OPENLANE_CMD" "$CONFIG_FILE" --ef-save-views-to .
     
 # Method 2: Try /openlane/flow.tcl
 elif [ -f "/openlane/flow.tcl" ]; then
@@ -95,12 +104,15 @@ else
     echo "Running OpenLane in Docker container..."
     echo "Working directory: $PROJECT_DIR"
     
-    # Run OpenLane directly (image has openlane as entrypoint)
+    # Run OpenLane with proper entrypoint
     docker run --rm \
       -v "$PROJECT_DIR":/work \
-      -w /work \
+      -e PDK_ROOT=/root/.volare \
+      --workdir /work \
       efabless/openlane:latest \
-      openlane/user_project_wrapper/config.json --ef-save-views-to /work
+      --dockerized \
+      --pdk sky130A \
+      openlane/user_project_wrapper/config.json
 fi
 
 echo ""
