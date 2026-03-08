@@ -53,8 +53,12 @@ if command -v openlane &> /dev/null; then
     OPENLANE_CMD="openlane"
 elif [ -x "$HOME/.nix-profile/bin/openlane" ]; then
     OPENLANE_CMD="$HOME/.nix-profile/bin/openlane"
+elif [ -x "/home/openhands/.nix-profile/bin/openlane" ]; then
+    OPENLANE_CMD="/home/openhands/.nix-profile/bin/openlane"
 elif [ -x "/usr/local/bin/openlane" ]; then
     OPENLANE_CMD="/usr/local/bin/openlane"
+elif [ -x "/usr/bin/openlane" ]; then
+    OPENLANE_CMD="/usr/bin/openlane"
 fi
 
 if [ -n "$OPENLANE_CMD" ]; then
@@ -104,15 +108,14 @@ else
     echo "Running OpenLane in Docker container..."
     echo "Working directory: $PROJECT_DIR"
     
-    # Run OpenLane with proper entrypoint
+    # Run OpenLane in Docker
+    # The image entrypoint is already set to run openlane
     docker run --rm \
       -v "$PROJECT_DIR":/work \
       -e PDK_ROOT=/root/.volare \
-      --workdir /work \
+      -w /work \
       efabless/openlane:latest \
-      --dockerized \
-      --pdk sky130A \
-      openlane/user_project_wrapper/config.json
+      openlane/user_project_wrapper/config.json --ef-save-views-to /work
 fi
 
 echo ""
