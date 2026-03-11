@@ -166,6 +166,70 @@ This document lists all IP cores used in the Caravel motor control user project.
 
 ---
 
+### 2.2 sky130_ef_ip__ccomp3v - 3.3V Continuous Comparator
+
+**Location:** `/nc/ip/sky130_ef_ip__ccomp3v/`  
+**Copied:** Yes (`ip_references/comparator/sky130_ccomp3v/`)
+
+**Instances in Project:**
+- Used as base for overcurrent protection comparators (3×)
+- Integrated in `overcurrent_protection` module
+
+**Purpose:**
+- Analog voltage comparison
+- Overcurrent detection for motor phases
+- Fast fault detection
+
+**Type:** Analog IP (Continuous Comparator)
+
+**Key Features:**
+- Rail-to-rail operation (0-3.3V)
+- 1 mV resolution
+- < 1 µs response time
+- 80 µA current consumption
+- Dual amplifier design (nFET + pFET)
+- Non-latching output
+
+**Used For:**
+- Phase A current > threshold comparison
+- Phase B current > threshold comparison
+- Phase C current > threshold comparison
+
+**Integration:**
+```
+Phase Current → Comparator → Fault Signal
+         ↑
+    DAC Threshold
+```
+
+**Note:** Critical for hardware overcurrent protection with sub-microsecond response.
+
+---
+
+### 2.3 EF_ACMP_DI - Analog Comparator Digital Interface
+
+**Location:** `/nc/ip/EF_ACMP_DI/`  
+**Copied:** Yes (`ip_references/comparator/EF_ACMP_DI/`)
+
+**Status:** Available for use (not currently instantiated)
+
+**Purpose:**
+- Digital interface wrapper for analog comparators
+- Simplifies analog comparator control
+
+**Type:** Digital Interface IP
+
+**Key Features:**
+- Simple digital control signals
+- Wishbone/APB/AHBL wrappers available
+- Easy integration with digital logic
+
+**Module:** `EF_ACMP_DI`
+
+**Note:** Can be used if additional comparator interfaces are needed.
+
+---
+
 ## 3. Custom Motor Control Modules (Created for This Project)
 
 ### 3.1 Motor PWM Module
@@ -464,6 +528,8 @@ Peripheral #9 (OCP):      0x3009_0000
 | **CF_SRAM_1024x32** | v1.2.0 | 1× | ✅ | 4KB memory |
 | **CF_IP_UTIL** | Latest | - | ✅ | IP utilities |
 | **sky130_ef_ip__adc3v_12bit** | Latest | Base | - | 12-bit ADC (analog) |
+| **sky130_ef_ip__ccomp3v** | Latest | 3× (base) | - | Analog comparator (OCP) |
+| **EF_ACMP_DI** | v1.0.1 | Available | - | Comparator digital interface |
 
 ---
 
@@ -572,12 +638,21 @@ Peripheral #9 (OCP):      0x3009_0000
 
 ## Total Resource Count
 
-**IP Cores Used:** 6 (from library)  
+**IP Cores Used:** 8 (from library)  
+- 5 verified NativeChips IPs (CF_SPI, CF_I2C, CF_TMR32, CF_SRAM, CF_IP_UTIL)
+- 3 analog IPs (ADC, comparator, comparator DI)
+
 **Custom Modules:** 9 (created for project)  
 **Active Peripherals:** 10  
 **IO Pins:** ~30 (digital + analog)  
 **Memory:** 4 KB SRAM  
 **IRQ Lines:** 9
+
+**Analog Components:**
+- 1× 12-bit ADC (general purpose)
+- 3× 12-bit ADC (motor current sensing)
+- 3× Analog comparators (overcurrent protection)
+- 1× DAC (programmable threshold)
 
 ---
 
