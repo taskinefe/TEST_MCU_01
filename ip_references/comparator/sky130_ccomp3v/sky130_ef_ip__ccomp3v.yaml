@@ -1,0 +1,23 @@
+---
+info:
+  name: sky130_ef_ip__ccomp3v
+  description: Continuous analog comparator, 1mV resolution
+  repo: https://github.com/efabless/sky130_ef_ip__ccomp3v
+  owner: Tim Edwards
+  license: APACHE 2.0
+  author: Tim Edwards
+  email: tim@efabless.com
+  version: v1.0.0
+  date: 27-11-2024
+  category: analog
+  tags:
+  - comparator
+  type: hard
+  status: verified
+  cell_count:
+  width: '0.0'
+  height: '0.0'
+  technology: sky130A
+  clock_freq_mhz:
+  digital_supply_voltage: n/a
+  analog_supply_voltage: n/a
