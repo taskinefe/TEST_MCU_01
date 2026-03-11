@@ -1,0 +1,16 @@
+{
+  "ips": [
+    {
+      "name": "CF_SPI",
+      "version": "v2.0.1"
+    },
+    {
+      "name": "CF_I2C",
+      "version": "v2.0.0"
+    },
+    {
+      "name": "CF_TMR32",
+      "version": "v2.1.0-nc"
+    }
+  ]
+}

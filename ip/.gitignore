@@ -1,3 +1,4 @@
-*
-!dependencies.json
-!.gitignore
+# Allow all IP files to be committed
+!*
+dependencies.json
+.gitignore
